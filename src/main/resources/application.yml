@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/cyberly
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:5567/cyberly_db
+    username: cyberly
+    password: cyberly
   jpa:
     hibernate:
       ddl-auto: update
