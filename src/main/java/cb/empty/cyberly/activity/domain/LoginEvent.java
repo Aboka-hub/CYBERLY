@@ -1,6 +1,7 @@
 package cb.empty.cyberly.activity.domain;
 
 import cb.empty.cyberly.accounts.domain.User;
+import cb.empty.cyberly.activity.domain.enums.LoginEventType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

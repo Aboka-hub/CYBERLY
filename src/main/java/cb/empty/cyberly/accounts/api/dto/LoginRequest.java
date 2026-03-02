@@ -15,10 +15,4 @@ public class LoginRequest {
 
     @NotBlank
     private String password;
-
-    @NotBlank
-    private String ipAddress;
-
-    private String country;
-    private String device;
 }

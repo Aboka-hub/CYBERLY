@@ -2,7 +2,7 @@ package cb.empty.cyberly.activity.infra;
 
 import cb.empty.cyberly.activity.domain.LoginEvent;
 import cb.empty.cyberly.accounts.domain.User;
-import cb.empty.cyberly.activity.domain.LoginEventType;
+import cb.empty.cyberly.activity.domain.enums.LoginEventType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

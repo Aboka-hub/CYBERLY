@@ -1,6 +1,6 @@
 package cb.empty.cyberly.accounts.api.dto;
 
-import cb.empty.cyberly.accounts.domain.Status;
+import cb.empty.cyberly.accounts.domain.emuns.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

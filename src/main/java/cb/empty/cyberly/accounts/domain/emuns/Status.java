@@ -1,4 +1,4 @@
-package cb.empty.cyberly.accounts.domain;
+package cb.empty.cyberly.accounts.domain.emuns;
 
 public enum Status {
     ACTIVE,

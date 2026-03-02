@@ -2,9 +2,9 @@ package cb.empty.cyberly.risk.app;
 
 import cb.empty.cyberly.accounts.domain.User;
 import cb.empty.cyberly.activity.domain.LoginEvent;
-import cb.empty.cyberly.activity.domain.LoginEventType;
+import cb.empty.cyberly.activity.domain.enums.LoginEventType;
 import cb.empty.cyberly.risk.domain.RiskLevel;
-import cb.empty.cyberly.accounts.domain.Status;
+import cb.empty.cyberly.accounts.domain.emuns.Status;
 import cb.empty.cyberly.activity.infra.LoginEventRepository;
 import cb.empty.cyberly.risk.infra.RiskSnapshotRepository;
 import cb.empty.cyberly.accounts.infra.UserRepository;

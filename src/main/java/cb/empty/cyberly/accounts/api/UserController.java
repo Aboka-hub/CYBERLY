@@ -4,6 +4,7 @@ import cb.empty.cyberly.accounts.api.dto.UserResponse;
 import cb.empty.cyberly.accounts.api.dto.LoginRequest;
 import cb.empty.cyberly.accounts.app.UserService;
 import cb.empty.cyberly.accounts.api.dto.RegisterRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,11 @@ public class UserController {
     }
     @PostMapping("/login")
     public ResponseEntity<UserResponse> login(
-            @RequestBody @Valid LoginRequest request
+            @RequestBody @Valid LoginRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return ResponseEntity.ok(userService.login(request));
+        return ResponseEntity.ok(
+                userService.login(request, httpRequest)
+        );
     }
 }
