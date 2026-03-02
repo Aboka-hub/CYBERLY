@@ -1,4 +1,4 @@
-package cb.empty.cyberly.accounts.api;
+package cb.empty.cyberly.accounts.api.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RegisterRequest {
+public class LoginRequest {
 
     @Email
     @NotBlank
@@ -15,4 +15,10 @@ public class RegisterRequest {
 
     @NotBlank
     private String password;
+
+    @NotBlank
+    private String ipAddress;
+
+    private String country;
+    private String device;
 }

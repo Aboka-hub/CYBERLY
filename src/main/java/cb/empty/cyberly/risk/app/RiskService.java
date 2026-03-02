@@ -23,7 +23,6 @@ public class RiskService {
     private final UserRepository userRepository;
 
     public void calculateRisk(User user, LoginEvent newEvent) {
-
         int score = 0;
         StringBuilder reasons = new StringBuilder();
 
@@ -84,10 +83,7 @@ public class RiskService {
         return RiskLevel.LOW;
     }
 
-    private void saveSnapshot(User user,
-                              int score,
-                              RiskLevel level,
-                              String reasons) {
+    private void saveSnapshot(User user, int score, RiskLevel level, String reasons) {
 
         RiskSnapshot snapshot =
                 riskSnapshotRepository.findByUser(user)
