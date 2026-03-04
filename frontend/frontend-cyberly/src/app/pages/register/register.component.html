@@ -1,0 +1,12 @@
+<h2>Register</h2>
+
+<div class="form">
+  <input [(ngModel)]="email" placeholder="Email">
+  <input [(ngModel)]="password" type="password" placeholder="Password">
+
+  <button (click)="register()">Register</button>
+
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <button routerLink="/login">Already have an account? Login</button>
+</div>

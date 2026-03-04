@@ -1,9 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5567/cyberly_db
-    username: cyberly
-    password: cyberly
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
