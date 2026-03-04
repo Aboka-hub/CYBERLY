@@ -21,5 +21,4 @@ jobs:
           java-version: '17'
 
       - name: Build backend
-        working-directory: backend-cyberly
         run: mvn clean install
