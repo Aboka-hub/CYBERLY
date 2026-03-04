@@ -50,14 +50,12 @@ public class UserService {
         String device = httpRequest.getHeader("User-Agent");
         String country = "Unknown";
 
-        // 1️⃣ Найти пользователя
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.UNAUTHORIZED,
                         "Invalid credentials"
                 ));
 
-        // 2️⃣ Проверить, не заблокирован ли пользователь
         if (user.getStatus() == Status.BLOCKED) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
@@ -65,18 +63,15 @@ public class UserService {
             );
         }
 
-        // 3️⃣ Проверить пароль
         boolean passwordMatches = passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword()
         );
 
-        // 4️⃣ Определить тип события
         LoginEventType eventType = passwordMatches
                 ? LoginEventType.LOGIN_SUCCESS
                 : LoginEventType.LOGIN_FAILED;
 
-        // 5️⃣ Записать событие логина
         LoginEvent event = loginEventService.recordEvent(
                 user,
                 eventType,
@@ -85,10 +80,8 @@ public class UserService {
                 device
         );
 
-        // 6️⃣ Рассчитать риск
         riskService.calculateRisk(user, event);
 
-        // 7️⃣ Если пароль неверный — ошибка
         if (!passwordMatches) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
@@ -96,7 +89,6 @@ public class UserService {
             );
         }
 
-        // 8️⃣ Проверить, не был ли пользователь заблокирован после расчёта риска
         if (user.getStatus() == Status.BLOCKED) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
@@ -104,7 +96,6 @@ public class UserService {
             );
         }
 
-        // 9️⃣ Вернуть успешный ответ
         return new UserResponse(
                 user.getId(),
                 user.getEmail(),
