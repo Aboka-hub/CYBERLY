@@ -15,4 +15,14 @@ export class ApiService {
   register(data: any) {
     return this.http.post('/api/user/register', data);
   }
+
+  getHeaders() {
+    const token = localStorage.getItem("token");
+
+    return {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    };
+  }
 }

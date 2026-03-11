@@ -10,6 +10,7 @@ import cb.empty.cyberly.activity.app.LoginEventService;
 import cb.empty.cyberly.activity.domain.LoginEvent;
 import cb.empty.cyberly.activity.domain.enums.LoginEventType;
 import cb.empty.cyberly.activity.infra.LoginEventRepository;
+import cb.empty.cyberly.common.config.JwtService;
 import cb.empty.cyberly.risk.app.RiskService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class UserService {
     private final LoginEventService loginEventService;
     private final RiskService riskService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public void register(RegisterRequest request) {
 
@@ -56,6 +58,19 @@ public class UserService {
                         "Invalid credentials"
                 ));
 
+        boolean success = passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword()
+        );
+
+        if (!success) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid credentials"
+            );
+        }
+
+        String token = jwtService.generateToken(user.getId(), user.getEmail());
         if (user.getStatus() == Status.BLOCKED) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
@@ -97,6 +112,7 @@ public class UserService {
         }
 
         return new UserResponse(
+                token,
                 user.getId(),
                 user.getEmail(),
                 user.getStatus(),
