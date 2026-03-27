@@ -1,12 +1,122 @@
-<h2>Register</h2>
+<div class="auth-page">
+  <div class="soft-wrap">
 
-<div class="form">
-  <input [(ngModel)]="email" placeholder="Email">
-  <input [(ngModel)]="password" type="password" placeholder="Password">
+    <div class="soft-logo">
+      <div class="soft-logo-icon">
+        <svg viewBox="0 0 18 18" fill="none">
+          <path d="M9 1.5L16 5.5V12.5L9 16.5L2 12.5V5.5L9 1.5Z"
+                stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+          <circle cx="9" cy="9" r="2.5" fill="#fff"/>
+        </svg>
+      </div>
+      <span class="soft-logo-name">Cyberly</span>
+    </div>
 
-  <button (click)="register()">Register</button>
+    <div class="soft-card">
 
-  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <!-- Steps indicator -->
+      <div class="steps">
+        <div class="stp" [class.stp--active]="step === 1" [class.stp--done]="step > 1">
+          <div class="stp-n">{{ step > 1 ? '✓' : '1' }}</div>
+          <div class="stp-t">Аккаунт</div>
+        </div>
+        <div class="stp" [class.stp--active]="step === 2" [class.stp--done]="step > 2">
+          <div class="stp-n">{{ step > 2 ? '✓' : '2' }}</div>
+          <div class="stp-t">Пароль</div>
+        </div>
+        <div class="stp" [class.stp--active]="step === 3">
+          <div class="stp-n">3</div>
+          <div class="stp-t">Готово</div>
+        </div>
+      </div>
 
-  <button routerLink="/login">Already have an account? Login</button>
+      <!-- Step 1: Email -->
+      <ng-container *ngIf="step === 1">
+        <h2 class="soft-title">Регистрация</h2>
+        <p class="soft-sub">Шаг 1 из 2 — ваш email</p>
+
+        <div class="sf" [class.sf--error]="emailError">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            [(ngModel)]="email"
+            name="email"
+            (input)="emailError = ''"
+          />
+          <span class="sf__error" *ngIf="emailError">{{ emailError }}</span>
+        </div>
+
+        <button class="soft-btn" (click)="nextStep()">Далее →</button>
+      </ng-container>
+
+      <!-- Step 2: Password -->
+      <ng-container *ngIf="step === 2">
+        <h2 class="soft-title">Придумайте пароль</h2>
+        <p class="soft-sub">Шаг 2 из 2 — защита аккаунта</p>
+
+        <div class="sf" [class.sf--error]="passwordError">
+          <label for="password">Пароль</label>
+          <div class="sf__input-wrap">
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Минимум 8 символов"
+              [(ngModel)]="password"
+              name="password"
+              (input)="passwordError = ''; checkStrength()"
+            />
+            <button type="button" class="sf__eye" (click)="showPassword = !showPassword">
+              {{ showPassword ? '🙈' : '👁' }}
+            </button>
+          </div>
+          <input type="password" [(ngModel)]="password" (input)="checkStrength()">
+          <div [style.width.%]="strengthWidth" [style.background]="strengthColor"></div>
+          <span>{{ strengthLabel }}</span>
+          <span class="sf__error" *ngIf="passwordError">{{ passwordError }}</span>
+        </div>
+
+        <div class="sf" [class.sf--error]="confirmError">
+          <label for="confirm">Подтверждение пароля</label>
+          <input
+            id="confirm"
+            type="password"
+            placeholder="Повторите пароль"
+            [(ngModel)]="confirmPassword"
+            name="confirm"
+            (input)="confirmError = ''"
+          />
+          <span class="sf__error" *ngIf="confirmError">{{ confirmError }}</span>
+        </div>
+
+        <div class="error-box" *ngIf="serverError">
+          <span>⚠ {{ serverError }}</span>
+        </div>
+
+        <div class="btn-row">
+          <button class="soft-btn soft-btn--outline" (click)="step = 1">← Назад</button>
+          <button class="soft-btn" (click)="onRegister()" [disabled]="loading">
+            <span *ngIf="!loading">Создать аккаунт</span>
+            <span *ngIf="loading" class="spinner"></span>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- Step 3: Success -->
+      <ng-container *ngIf="step === 3">
+        <div class="success-state">
+          <div class="success-icon">✓</div>
+          <h2 class="soft-title">Аккаунт создан!</h2>
+          <p class="soft-sub">Перенаправляем вас на вход...</p>
+        </div>
+      </ng-container>
+
+      <p class="soft-footer" *ngIf="step < 3">
+        Уже есть аккаунт?
+        <a routerLink="/login">Войти</a>
+      </p>
+    </div>
+
+  </div>
 </div>

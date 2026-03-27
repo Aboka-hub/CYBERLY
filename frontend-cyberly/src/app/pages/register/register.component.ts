@@ -1,39 +1,83 @@
 import { Component } from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {ApiService} from '../../services/api.service';
-import {Router, RouterLink} from '@angular/router';
-import {NgIf} from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
-  imports: [
-    FormsModule,
-    NgIf,
-    RouterLink
-  ],
+  standalone: true,
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css',
+  styleUrl: './register.component.css'
 })
-
 export class RegisterComponent {
+  email           = '';
+  password        = '';
+  confirmPassword = '';
+  loading         = false;
+  error           = '';
+  step            = 1;
+  emailError = ''
+  passwordError = ''
+  confirmError = ''
+  showPassword = false;
+  serverError: any;
+  strengthWidth   = 0;
 
-  email = '';
-  password = '';
-  errorMessage = '';
+  constructor(private auth: AuthService, private router: Router) {}
 
-  constructor(private api: ApiService,
-              private router: Router) {}
+  checkStrength() {
+    const p = this.password;
+    let score = 0;
+    if (p.length >= 8)              score += 25;
+    if (p.length >= 12)             score += 15;
+    if (/[A-Z]/.test(p))            score += 20;
+    if (/[0-9]/.test(p))            score += 20;
+    if (/[^A-Za-z0-9]/.test(p))     score += 20;
+    this.strengthWidth = Math.min(score, 100);
+  }
 
-  register() {
-    this.api.register({
-      email: this.email,
-      password: this.password
-    }).subscribe({
+  get strengthColor(): string {
+    if (this.strengthWidth >= 80) return '#16a34a';
+    if (this.strengthWidth >= 50) return '#d97706';
+    return '#dc2626';
+  }
+
+  get strengthLabel(): string {
+    if (this.strengthWidth >= 80) return 'Надёжный';
+    if (this.strengthWidth >= 50) return 'Средний';
+    if (this.strengthWidth >  0)  return 'Слабый';
+    return '';
+  }
+
+  get passwordMismatch(): boolean {
+    return this.confirmPassword.length > 0 && this.password !== this.confirmPassword;
+  }
+
+  get isStep1Valid(): boolean {
+    return this.email.length > 0
+      && this.password.length >= 8
+      && this.password === this.confirmPassword;
+  }
+  nextStep() {
+    if (this.isStep1Valid) this.step = 2;
+  }
+
+  onRegister() {
+    if (!this.isStep1Valid) return;
+    this.loading = true;
+    this.error   = '';
+
+    this.auth.register({ email: this.email, password: this.password }).subscribe({
       next: () => {
-        this.router.navigate(['/login']);
+        this.step = 3;
+        setTimeout(() => this.router.navigate(['/login']), 1800);
       },
       error: (err) => {
-        this.errorMessage = err.error?.error || 'Registration failed';
+        if (err.status === 409) this.error = 'Пользователь с таким email уже существует';
+        else this.error = err.error?.error ?? 'Ошибка регистрации';
+        this.loading = false;
       }
     });
   }

@@ -1,12 +1,83 @@
-<h2>Login</h2>
+<div class="auth-page">
+  <div class="soft-wrap">
 
-<div class="form">
-  <input [(ngModel)]="email" placeholder="Email">
-  <input [(ngModel)]="password" type="password" placeholder="Password">
+    <div class="soft-logo">
+      <div class="soft-logo-icon">
+        <svg viewBox="0 0 18 18" fill="none">
+          <path d="M9 1.5L16 5.5V12.5L9 16.5L2 12.5V5.5L9 1.5Z"
+                stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+          <circle cx="9" cy="9" r="2.5" fill="#fff"/>
+        </svg>
+      </div>
+      <span class="soft-logo-name">Cyberly</span>
+    </div>
 
-  <button (click)="login()">Login</button>
+    <div class="soft-card">
+      <h2 class="soft-title">Добро пожаловать</h2>
+      <p class="soft-sub">Войдите в свой аккаунт</p>
 
-  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <form (ngSubmit)="onLogin()" #loginForm="ngForm">
 
-  <button routerLink="/register">No account? Register</button>
+        <div class="sf" [class.sf--error]="emailError">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            [(ngModel)]="email"
+            name="email"
+            required
+            email
+            (input)="emailError = ''"
+          />
+          <span class="sf__error" *ngIf="emailError">{{ emailError }}</span>
+        </div>
+
+        <div class="sf" [class.sf--error]="passwordError">
+          <label for="password">Пароль</label>
+          <div class="sf__input-wrap">
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="••••••••"
+              [(ngModel)]="password"
+              name="password"
+              required
+              (input)="passwordError = ''"
+            />
+            <button type="button" class="sf__eye" (click)="showPassword = !showPassword">
+              {{ showPassword ? '🙈' : '👁' }}
+            </button>
+          </div>
+          <span class="sf__error" *ngIf="passwordError">{{ passwordError }}</span>
+        </div>
+
+        <div class="error-box" *ngIf="serverError">
+          <span>⚠ {{ serverError }}</span>
+        </div>
+
+        <button type="submit" class="soft-btn" [disabled]="loading">
+          <span *ngIf="!loading">Войти</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+
+      </form>
+
+      <div class="soft-divider">или</div>
+
+      <p class="soft-footer">
+        Нет аккаунта?
+        <a routerLink="/register">Зарегистрироваться</a>
+      </p>
+
+      <div class="soft-tags">
+        <span class="st st1">JWT Auth</span>
+        <span class="st st2">Spring Boot</span>
+        <span class="st st3">Angular</span>
+      </div>
+    </div>
+      <button class="btn-guest" (click)="goToDashboard()">
+          Посмотреть Dashboard →
+      </button>
+  </div>
 </div>
