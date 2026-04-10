@@ -4,12 +4,11 @@ import cb.empty.cyberly.accounts.api.dto.UserResponse;
 import cb.empty.cyberly.accounts.api.dto.LoginRequest;
 import cb.empty.cyberly.accounts.api.dto.RegisterRequest;
 import cb.empty.cyberly.accounts.domain.User;
-import cb.empty.cyberly.accounts.domain.emuns.Status;
+import cb.empty.cyberly.accounts.domain.enums.Status;
 import cb.empty.cyberly.accounts.infra.UserRepository;
 import cb.empty.cyberly.activity.app.LoginEventService;
 import cb.empty.cyberly.activity.domain.LoginEvent;
 import cb.empty.cyberly.activity.domain.enums.LoginEventType;
-import cb.empty.cyberly.activity.infra.LoginEventRepository;
 import cb.empty.cyberly.common.config.JwtService;
 import cb.empty.cyberly.risk.app.RiskService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,26 +57,6 @@ public class UserService {
                         "Invalid credentials"
                 ));
 
-        boolean success = passwordEncoder.matches(
-                request.getPassword(),
-                user.getPassword()
-        );
-
-        if (!success) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Invalid credentials"
-            );
-        }
-
-        String token = jwtService.generateToken(user.getId(), user.getEmail());
-        if (user.getStatus() == Status.BLOCKED) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "User is blocked"
-            );
-        }
-
         boolean passwordMatches = passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword()
@@ -107,9 +86,11 @@ public class UserService {
         if (user.getStatus() == Status.BLOCKED) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "User blocked due to high risk"
+                    "User is blocked"
             );
         }
+
+        String token = jwtService.generateToken(user.getId(), user.getEmail());
 
         return new UserResponse(
                 token,

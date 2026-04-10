@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(public auth: AuthService, private svc: DashboardService) {}
 
-  ngOnInit() { this.loadMock(); }
+  ngOnInit() { this.loadAll(); }
 
   // ── MOCK данные для теста (замени на loadAll() когда бэкенд готов) ──
   loadMock() {
