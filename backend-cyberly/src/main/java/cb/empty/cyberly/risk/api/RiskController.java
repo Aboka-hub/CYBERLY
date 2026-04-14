@@ -2,6 +2,7 @@ package cb.empty.cyberly.risk.api;
 
 import cb.empty.cyberly.accounts.domain.User;
 import cb.empty.cyberly.accounts.infra.UserRepository;
+import cb.empty.cyberly.common.config.SecurityUtils;
 import cb.empty.cyberly.risk.domain.RiskSnapshot;
 import cb.empty.cyberly.risk.infra.RiskSnapshotRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ public class RiskController {
 
     @GetMapping("/{userId}")
     public RiskSnapshot getRisk(@PathVariable Long userId) {
+
+        SecurityUtils.requireOwner(userId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(

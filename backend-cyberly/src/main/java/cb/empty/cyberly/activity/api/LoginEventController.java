@@ -4,6 +4,7 @@ import cb.empty.cyberly.accounts.domain.User;
 import cb.empty.cyberly.accounts.infra.UserRepository;
 import cb.empty.cyberly.activity.domain.LoginEvent;
 import cb.empty.cyberly.activity.infra.LoginEventRepository;
+import cb.empty.cyberly.common.config.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,15 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/login-events")
 public class LoginEventController {
+
     private final LoginEventRepository loginEventRepository;
     private final UserRepository userRepository;
 
     @GetMapping("/{userId}")
     public List<LoginEvent> getHistory(@PathVariable Long userId) {
+
+        SecurityUtils.requireOwner(userId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(
