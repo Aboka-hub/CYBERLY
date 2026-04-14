@@ -1,4 +1,4 @@
-package cb.empty.cyberly.common.config;
+package cb.empty.cyberly.common.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

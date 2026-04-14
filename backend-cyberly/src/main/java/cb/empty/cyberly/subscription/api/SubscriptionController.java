@@ -1,5 +1,6 @@
 package cb.empty.cyberly.subscription.api;
 
+import cb.empty.cyberly.common.security.SecurityUtils;
 import cb.empty.cyberly.subscription.app.SubscriptionService;
 import cb.empty.cyberly.subscription.domain.Subscription;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,14 @@ public class SubscriptionController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate nextPaymentDate
     ) {
+        SecurityUtils.requireOwner(userId);
         subscriptionService.addSubscription(userId, serviceName, nextPaymentDate);
         return ResponseEntity.ok("Subscription added");
     }
 
     @GetMapping("/{userId}")
     public List<Subscription> getUserSubscriptions(@PathVariable Long userId) {
+        SecurityUtils.requireOwner(userId);
         return subscriptionService.getUserSubscriptions(userId);
     }
 }
