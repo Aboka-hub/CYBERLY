@@ -72,33 +72,24 @@ public class UserService {
                 user.getPassword()
         );
 
-        LoginEventType eventType = passwordMatches
-                ? LoginEventType.LOGIN_SUCCESS
-                : LoginEventType.LOGIN_FAILED;
+        if (!passwordMatches) {
+            loginEventService.recordEvent(user, LoginEventType.LOGIN_FAILED, ipAddress, country, device);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+
+        if (user.getStatus() == Status.BLOCKED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is blocked");
+        }
 
         LoginEvent event = loginEventService.recordEvent(
                 user,
-                eventType,
+                LoginEventType.LOGIN_SUCCESS,
                 ipAddress,
                 country,
                 device
         );
 
         riskService.calculateRisk(user, event);
-
-        if (!passwordMatches) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Invalid credentials"
-            );
-        }
-
-        if (user.getStatus() == Status.BLOCKED) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "User is blocked"
-            );
-        }
 
         String token = jwtService.generateToken(user.getId(), user.getEmail());
 
