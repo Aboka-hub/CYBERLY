@@ -1,4 +1,4 @@
-package cb.empty.cyberly.common.config;
+package cb.empty.cyberly.common.security;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;

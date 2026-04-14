@@ -9,7 +9,7 @@ import cb.empty.cyberly.accounts.infra.UserRepository;
 import cb.empty.cyberly.activity.app.LoginEventService;
 import cb.empty.cyberly.activity.domain.LoginEvent;
 import cb.empty.cyberly.activity.domain.enums.LoginEventType;
-import cb.empty.cyberly.common.config.JwtService;
+import cb.empty.cyberly.common.security.JwtService;
 import cb.empty.cyberly.risk.app.RiskService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

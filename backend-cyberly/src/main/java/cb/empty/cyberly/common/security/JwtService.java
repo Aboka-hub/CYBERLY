@@ -1,4 +1,4 @@
-package cb.empty.cyberly.common.config;
+package cb.empty.cyberly.common.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

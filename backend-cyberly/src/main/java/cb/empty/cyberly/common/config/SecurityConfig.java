@@ -1,5 +1,6 @@
 package cb.empty.cyberly.common.config;
 
+import cb.empty.cyberly.common.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

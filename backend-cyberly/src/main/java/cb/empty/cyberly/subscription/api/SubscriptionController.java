@@ -1,6 +1,6 @@
 package cb.empty.cyberly.subscription.api;
 
-import cb.empty.cyberly.common.config.SecurityUtils;
+import cb.empty.cyberly.common.security.SecurityUtils;
 import cb.empty.cyberly.subscription.app.SubscriptionService;
 import cb.empty.cyberly.subscription.domain.Subscription;
 import lombok.RequiredArgsConstructor;
