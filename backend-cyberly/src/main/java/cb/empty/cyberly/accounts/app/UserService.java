@@ -9,6 +9,7 @@ import cb.empty.cyberly.accounts.infra.UserRepository;
 import cb.empty.cyberly.activity.app.LoginEventService;
 import cb.empty.cyberly.activity.domain.LoginEvent;
 import cb.empty.cyberly.activity.domain.enums.LoginEventType;
+import cb.empty.cyberly.common.config.GeoIpService;
 import cb.empty.cyberly.common.security.JwtService;
 import cb.empty.cyberly.risk.app.RiskService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,15 @@ public class UserService {
     private final RiskService riskService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final GeoIpService geoIpService;
+
+    public UserResponse getMe(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found"
+                ));
+        return new UserResponse(null, user.getId(), user.getEmail(), user.getStatus(), "OK");
+    }
 
     public void register(RegisterRequest request) {
 
@@ -49,7 +59,7 @@ public class UserService {
 
         String ipAddress = httpRequest.getRemoteAddr();
         String device = httpRequest.getHeader("User-Agent");
-        String country = "Unknown";
+        String country = geoIpService.getCountry(ipAddress);
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(
