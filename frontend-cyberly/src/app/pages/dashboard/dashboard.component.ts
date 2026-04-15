@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -25,7 +26,6 @@ export class DashboardComponent implements OnInit {
   loading = true;
   error   = '';
 
-  // Форма добавления подписки
   showAddForm    = false;
   addLoading     = false;
   newSub: SubscriptionRequest = { serviceName: '', amount: 0, nextPaymentDate: '' };
@@ -34,9 +34,18 @@ export class DashboardComponent implements OnInit {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 
-  constructor(public auth: AuthService, private svc: DashboardService) {}
+  constructor(
+    public auth: AuthService,
+    private svc: DashboardService,
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
-  ngOnInit() { this.loadAll(); }
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadAll();
+    }
+  }
 
   loadAll() {
     const uid = this.auth.getUserId();
@@ -58,8 +67,13 @@ export class DashboardComponent implements OnInit {
           failed:  this.events.filter(e => e.type === 'LOGIN_FAILED').length
         };
         this.loading = false;
+        this.cdr.detectChanges();
       },
-      error: () => { this.error = 'Не удалось загрузить данные'; this.loading = false; }
+      error: () => {
+        this.error = 'Не удалось загрузить данные';
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
