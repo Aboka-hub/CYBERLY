@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -26,8 +27,7 @@ export interface UserResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  // context-path /api from application.yml
-  private base = 'http://localhost:8080/api';
+  private base = '/api';
 
   constructor(private http: HttpClient, private router: Router) {}
 

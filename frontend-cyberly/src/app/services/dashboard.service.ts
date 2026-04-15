@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
 
+// Matches LoginEventResponse.java
 export interface LoginEvent {
   id: number;
-  user: { id: number; email: string; status: string };
+  userEmail: string;
   type: 'LOGIN_SUCCESS' | 'LOGIN_FAILED';
   ipAddress: string;
   country: string;
   device: string;
-  createdAt: string; // LocalDateTime → ISO string
+  createdAt: string;
 }
 
 // Matches RiskSnapshot.java
 export interface RiskSnapshot {
   id: number;
-  score: number;                              // 0–100
+  score: number;
   level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   reasons: string;
   calculatedAt: string;
@@ -27,43 +27,41 @@ export interface Subscription {
   id: number;
   serviceName: string;
   amount: number;
-  nextPaymentDate: string;  // LocalDate → "YYYY-MM-DD"
+  nextPaymentDate: string;
   active: boolean;
   createdAt: string;
+}
+
+export interface SubscriptionRequest {
+  serviceName: string;
+  amount: number;
+  nextPaymentDate: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
 
-  private base = 'http://localhost:8080/api';
+  private base = '/api';
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(private http: HttpClient) {}
 
-  private get headers(): HttpHeaders {
-    return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` });
-  }
-
-  // GET /api/login-events/{userId}  → top 20 events desc
   getLoginEvents(userId: number): Observable<LoginEvent[]> {
-    return this.http.get<LoginEvent[]>(
-      `${this.base}/login-events/${userId}`,
-      { headers: this.headers }
-    );
+    return this.http.get<LoginEvent[]>(`${this.base}/login-events/${userId}`);
   }
 
-  // GET /api/risk/{userId}
   getRiskSnapshot(userId: number): Observable<RiskSnapshot> {
-    return this.http.get<RiskSnapshot>(
-      `${this.base}/risk/${userId}`,
-      { headers: this.headers }
-    );
+    return this.http.get<RiskSnapshot>(`${this.base}/risk/${userId}`);
   }
 
-  // GET /api/subscriptions/{userId}
   getSubscriptions(userId: number): Observable<Subscription[]> {
-    return this.http.get<Subscription[]>(
-      `${this.base}/subscriptions/${userId}`,
-      { headers: this.headers }
-    );
+    return this.http.get<Subscription[]>(`${this.base}/subscriptions/${userId}`);
+  }
+
+  addSubscription(userId: number, request: SubscriptionRequest): Observable<string> {
+    return this.http.post(`${this.base}/subscriptions/${userId}`, request, { responseType: 'text' });
+  }
+
+  deleteSubscription(userId: number, subscriptionId: number): Observable<string> {
+    return this.http.delete(`${this.base}/subscriptions/${userId}/${subscriptionId}`, { responseType: 'text' });
   }
 }
