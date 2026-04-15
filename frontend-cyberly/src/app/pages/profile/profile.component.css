@@ -1,0 +1,28 @@
+/* ===== PROFILE CARD ===== */
+.profile-card { background: var(--mc-bg); border: 1px solid var(--border); border-radius: 14px; padding: 24px; display: flex; align-items: center; gap: 20px; margin-bottom: 10px; }
+.profile-avatar-wrap { flex-shrink: 0; }
+.profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--grad); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; color: #fff; box-shadow: 0 4px 16px rgba(192,132,252,.35); }
+.profile-info { flex: 1; min-width: 0; }
+.profile-email { font-size: 18px; font-weight: 600; color: var(--text); letter-spacing: -.3px; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.profile-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* ===== STATUS BADGE ===== */
+.status-badge { font-size: 11px; font-weight: 500; font-family: 'DM Mono', monospace; padding: 3px 10px; border-radius: 20px; }
+.status-badge.active  { background: var(--green-bg); color: var(--green-c); }
+.status-badge.blocked { background: var(--red-bg);   color: var(--red-c); }
+
+/* ===== DETAILS GRID ===== */
+.details-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 10px; }
+.detail-item { background: var(--mc-bg); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+.detail-label { font-size: 9px; font-weight: 500; color: var(--hint); letter-spacing: .5px; font-family: 'DM Mono', monospace; text-transform: uppercase; margin-bottom: 6px; }
+.detail-value { font-size: 13px; font-weight: 500; color: var(--text); }
+.detail-value.green { color: var(--green-c); }
+.detail-value.red   { color: var(--red-c); }
+.detail-value.mono  { font-family: 'DM Mono', monospace; }
+
+/* ===== ACTIONS ===== */
+.actions-card { }
+.danger-btn { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--red-c); background: transparent; color: var(--red-c); font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; transition: .15s; }
+.danger-btn:hover { background: var(--red-bg); }
+
+@media (max-width: 600px) { .details-grid { grid-template-columns: 1fr; } }

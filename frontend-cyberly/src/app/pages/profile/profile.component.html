@@ -1,0 +1,78 @@
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="tb-title">Профиль</div>
+      <div class="tb-sub">{{ today }}</div>
+    </div>
+    <div class="tb-right">
+      <button class="btn-sm" (click)="load()">↻ Обновить</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- LOADING -->
+    <ng-container *ngIf="loading">
+      <div class="skeleton" style="height:160px;border-radius:14px;margin-bottom:10px"></div>
+      <div class="skeleton" style="height:100px;border-radius:14px"></div>
+    </ng-container>
+
+    <!-- ERROR -->
+    <div class="error-state" *ngIf="error && !loading">
+      <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="var(--red-c)" stroke-width="1.5"/><path d="M20 13v8M20 26v1" stroke="var(--red-c)" stroke-width="2" stroke-linecap="round"/></svg>
+      <p>{{ error }}</p>
+      <button class="soft-btn-sm" (click)="load()">Попробовать снова</button>
+    </div>
+
+    <ng-container *ngIf="!loading && profile">
+
+      <!-- PROFILE CARD -->
+      <div class="profile-card">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar">{{ getInitial() }}</div>
+        </div>
+        <div class="profile-info">
+          <div class="profile-email">{{ profile.email }}</div>
+          <div class="profile-meta">
+            <span class="status-badge" [class.active]="profile.status === 'ACTIVE'" [class.blocked]="profile.status === 'BLOCKED'">
+              {{ profile.status === 'ACTIVE' ? '● Активен' : '● Заблокирован' }}
+            </span>
+            <span class="mono-badge">ID: {{ profile.userId }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAILS GRID -->
+      <div class="details-grid">
+        <div class="detail-item">
+          <div class="detail-label">Email</div>
+          <div class="detail-value">{{ profile.email }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Статус аккаунта</div>
+          <div class="detail-value" [class.green]="profile.status === 'ACTIVE'" [class.red]="profile.status === 'BLOCKED'">
+            {{ profile.status }}
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">ID пользователя</div>
+          <div class="detail-value mono">{{ profile.userId }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Роль</div>
+          <div class="detail-value">USER</div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="card actions-card">
+        <div class="ch" style="margin-bottom:12px">Действия</div>
+        <button class="danger-btn" (click)="auth.logout()">
+          <svg viewBox="0 0 14 14" fill="none" style="width:13px;height:13px"><path d="M9 7H3M9 7L7 5M9 7L7 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v8a1 1 0 01-1 1H6a1 1 0 01-1-1v-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Выйти из аккаунта
+        </button>
+      </div>
+
+    </ng-container>
+  </div>
+</main>
