@@ -2,6 +2,7 @@ package cb.empty.cyberly.subscription.app;
 
 import cb.empty.cyberly.accounts.domain.User;
 import cb.empty.cyberly.accounts.infra.UserRepository;
+import cb.empty.cyberly.subscription.api.dto.SubscriptionRequest;
 import cb.empty.cyberly.subscription.domain.Subscription;
 import cb.empty.cyberly.subscription.infra.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,20 +21,17 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
 
-    public void addSubscription(Long userId,
-                                String serviceName,
-                                LocalDate nextPaymentDate) {
-
+    public void addSubscription(Long userId, SubscriptionRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "User not found"
+                        HttpStatus.NOT_FOUND, "User not found"
                 ));
 
         Subscription subscription = new Subscription();
         subscription.setUser(user);
-        subscription.setServiceName(serviceName);
-        subscription.setNextPaymentDate(nextPaymentDate);
+        subscription.setServiceName(request.getServiceName());
+        subscription.setAmount(request.getAmount());
+        subscription.setNextPaymentDate(request.getNextPaymentDate());
         subscription.setActive(true);
 
         subscriptionRepository.save(subscription);
@@ -43,18 +41,26 @@ public class SubscriptionService {
         return subscriptionRepository.findByUserId(userId);
     }
 
-    @Scheduled(cron = "0 0 0 * * ?") // каждый день в 00:00
-    public void checkExpiredSubscriptions() {
+    public void deactivate(Long userId, Long subscriptionId) {
+        Subscription sub = subscriptionRepository.findById(subscriptionId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Subscription not found"
+                ));
 
-        LocalDate today = LocalDate.now();
-
-        List<Subscription> activeSubscriptions =
-                subscriptionRepository.findByNextPaymentDateAndActive(today, true);
-
-        for (Subscription sub : activeSubscriptions) {
-            sub.setActive(false);
+        if (!sub.getUser().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
 
-        subscriptionRepository.saveAll(activeSubscriptions);
+        sub.setActive(false);
+        subscriptionRepository.save(sub);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void checkExpiredSubscriptions() {
+        LocalDate today = LocalDate.now();
+        List<Subscription> expired =
+                subscriptionRepository.findByNextPaymentDateBeforeAndActive(today, true);
+        expired.forEach(sub -> sub.setActive(false));
+        subscriptionRepository.saveAll(expired);
     }
 }

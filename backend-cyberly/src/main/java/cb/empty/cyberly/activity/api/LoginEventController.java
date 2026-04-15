@@ -1,7 +1,7 @@
 package cb.empty.cyberly.activity.api;
 
+import cb.empty.cyberly.activity.api.dto.LoginEventResponse;
 import cb.empty.cyberly.activity.app.LoginEventService;
-import cb.empty.cyberly.activity.domain.LoginEvent;
 import cb.empty.cyberly.common.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ public class LoginEventController {
     private final LoginEventService loginEventService;
 
     @GetMapping("/{userId}")
-    public List<LoginEvent> getHistory(@PathVariable Long userId) {
+    public List<LoginEventResponse> getHistory(@PathVariable Long userId) {
         SecurityUtils.requireOwner(userId);
         return loginEventService.getHistory(userId);
     }
