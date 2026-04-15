@@ -2,6 +2,7 @@ package cb.empty.cyberly.activity.app;
 
 import cb.empty.cyberly.accounts.domain.User;
 import cb.empty.cyberly.accounts.infra.UserRepository;
+import cb.empty.cyberly.activity.api.dto.LoginEventResponse;
 import cb.empty.cyberly.activity.domain.LoginEvent;
 import cb.empty.cyberly.activity.domain.enums.LoginEventType;
 import cb.empty.cyberly.activity.infra.LoginEventRepository;
@@ -24,22 +25,24 @@ public class LoginEventService {
                                   String ip,
                                   String country,
                                   String device) {
-
         LoginEvent event = new LoginEvent();
         event.setUser(user);
         event.setType(type);
         event.setIpAddress(ip);
         event.setCountry(country);
         event.setDevice(device);
-
         return loginEventRepository.save(event);
     }
 
-    public List<LoginEvent> getHistory(Long userId) {
+    public List<LoginEventResponse> getHistory(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found"
                 ));
-        return loginEventRepository.findTop20ByUserOrderByCreatedAtDesc(user);
+        return loginEventRepository
+                .findTop20ByUserOrderByCreatedAtDesc(user)
+                .stream()
+                .map(LoginEventResponse::from)
+                .toList();
     }
 }
