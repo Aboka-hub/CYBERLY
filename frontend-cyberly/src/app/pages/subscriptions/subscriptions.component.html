@@ -1,0 +1,114 @@
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="tb-title">Подписки</div>
+      <div class="tb-sub">{{ today }}</div>
+    </div>
+    <div class="tb-right">
+      <button class="btn-sm" (click)="showAddForm = !showAddForm">+ Добавить</button>
+      <button class="btn-sm" (click)="load()">↻ Обновить</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- LOADING -->
+    <ng-container *ngIf="loading">
+      <div class="skeleton" style="height:90px;border-radius:14px;margin-bottom:10px"></div>
+      <div class="skeleton" style="height:240px;border-radius:14px"></div>
+    </ng-container>
+
+    <!-- ERROR -->
+    <div class="error-state" *ngIf="error && !loading">
+      <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="var(--red-c)" stroke-width="1.5"/><path d="M20 13v8M20 26v1" stroke="var(--red-c)" stroke-width="2" stroke-linecap="round"/></svg>
+      <p>{{ error }}</p>
+      <button class="soft-btn-sm" (click)="load()">Попробовать снова</button>
+    </div>
+
+    <ng-container *ngIf="!loading && !error">
+
+      <!-- SUMMARY ROW -->
+      <div class="summary-row">
+        <div class="sum-card">
+          <div class="sum-label">Активных</div>
+          <div class="sum-val">{{ activeCount }}</div>
+        </div>
+        <div class="sum-card">
+          <div class="sum-label">Всего подписок</div>
+          <div class="sum-val">{{ subscriptions.length }}</div>
+        </div>
+        <div class="sum-card accent">
+          <div class="sum-label">Ежемесячно</div>
+          <div class="sum-val">${{ totalMonthly | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+      <!-- ADD FORM -->
+      <div class="add-panel" *ngIf="showAddForm">
+        <div class="add-panel-title">Новая подписка</div>
+        <div class="add-form-row">
+          <input class="form-input" placeholder="Название сервиса (Netflix, Spotify...)" [(ngModel)]="newSub.serviceName" />
+          <input class="form-input" type="number" placeholder="Сумма ($)" [(ngModel)]="newSub.amount" min="0.01" step="0.01" />
+          <input class="form-input" type="date" [(ngModel)]="newSub.nextPaymentDate" />
+          <button class="soft-btn-sm" (click)="addSubscription()" [disabled]="addLoading">
+            {{ addLoading ? 'Сохранение...' : 'Добавить' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- LIST -->
+      <div class="tcard">
+        <div class="tcard-head">
+          <div class="ch">Все подписки</div>
+          <span class="count-badge">{{ subscriptions.length }} записей</span>
+        </div>
+
+        <div class="empty-state" *ngIf="subscriptions.length === 0">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="var(--hint)" stroke-width="1.5"/><path d="M13 20h14M20 13v14" stroke="var(--hint)" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <p>Подписок пока нет. Нажмите «+ Добавить».</p>
+        </div>
+
+        <div class="table-scroll" *ngIf="subscriptions.length > 0">
+          <table>
+            <thead>
+              <tr>
+                <th>Сервис</th>
+                <th>Сумма</th>
+                <th>Следующий платёж</th>
+                <th>Статус</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of subscriptions">
+                <td>
+                  <div class="sub-name-cell">
+                    <div class="sub-icon">{{ s.serviceName.charAt(0) }}</div>
+                    <span>{{ s.serviceName }}</span>
+                  </div>
+                </td>
+                <td><span class="sub-amount">${{ s.amount | number:'1.2-2' }}</span></td>
+                <td>
+                  <span class="sub-date"
+                    [class.expiring]="isExpiringSoon(s.nextPaymentDate)"
+                    [class.expired]="isExpired(s.nextPaymentDate)">
+                    {{ isExpired(s.nextPaymentDate) ? 'Просрочена' : s.nextPaymentDate }}
+                  </span>
+                </td>
+                <td>
+                  <span class="sub-badge" [class.active]="s.active" [class.inactive]="!s.active">
+                    {{ s.active ? 'Активна' : 'Истекла' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="del-btn" *ngIf="s.active" (click)="deleteSubscription(s.id)" title="Деактивировать">✕</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+</main>

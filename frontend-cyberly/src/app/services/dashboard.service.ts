@@ -64,4 +64,14 @@ export class DashboardService {
   deleteSubscription(userId: number, subscriptionId: number): Observable<string> {
     return this.http.delete(`${this.base}/subscriptions/${userId}/${subscriptionId}`, { responseType: 'text' });
   }
+
+  getMe(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.base}/user/me`);
+  }
+}
+
+export interface UserProfile {
+  userId: number;
+  email: string;
+  status: 'ACTIVE' | 'BLOCKED';
 }

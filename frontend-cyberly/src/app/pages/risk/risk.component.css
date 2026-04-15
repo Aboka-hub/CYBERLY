@@ -1,0 +1,25 @@
+/* ===== MAIN RISK CARD ===== */
+.risk-main-card { background: var(--mc-bg); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.risk-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.card-section-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.risk-level-lg { font-size: 13px; padding: 5px 14px; border-radius: 20px; }
+
+/* ===== SCORE ===== */
+.risk-score-section { margin-bottom: 20px; }
+.risk-score-xl { font-size: 72px !important; }
+.risk-score-label-lg { font-size: 22px !important; }
+.risk-bar-lg .risk-bar-track { height: 8px !important; border-radius: 5px !important; }
+
+/* ===== THRESHOLDS ===== */
+.thresholds { display: flex; gap: 8px; flex-wrap: wrap; }
+.threshold-item { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: var(--input-bg); border: 1px solid var(--border); font-size: 11px; color: var(--hint); transition: .2s; }
+.threshold-item.passed { color: var(--text); border-color: var(--border2); background: var(--surface); }
+.threshold-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); }
+.threshold-dot.green    { background: var(--green-c); }
+.threshold-dot.amber    { background: var(--amber-c); }
+.threshold-dot.red      { background: var(--red-c); }
+.threshold-dot.critical { background: var(--red-c); box-shadow: 0 0 6px var(--red-c); }
+
+/* ===== REASONS ===== */
+.reason-item-lg { font-size: 12px !important; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.reason-item-lg:last-child { border-bottom: none; }
