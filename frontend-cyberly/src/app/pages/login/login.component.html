@@ -18,7 +18,7 @@
 
       <form (ngSubmit)="onLogin()" #loginForm="ngForm">
 
-        <div class="sf" [class.sf--error]="emailError">
+        <div class="sf">
           <label for="email">Email</label>
           <input
             id="email"
@@ -27,13 +27,10 @@
             [(ngModel)]="email"
             name="email"
             required
-            email
-            (input)="emailError = ''"
           />
-          <span class="sf__error" *ngIf="emailError">{{ emailError }}</span>
         </div>
 
-        <div class="sf" [class.sf--error]="passwordError">
+        <div class="sf">
           <label for="password">Пароль</label>
           <div class="sf__input-wrap">
             <input
@@ -43,17 +40,15 @@
               [(ngModel)]="password"
               name="password"
               required
-              (input)="passwordError = ''"
             />
             <button type="button" class="sf__eye" (click)="showPassword = !showPassword">
               {{ showPassword ? '🙈' : '👁' }}
             </button>
           </div>
-          <span class="sf__error" *ngIf="passwordError">{{ passwordError }}</span>
         </div>
 
-        <div class="error-box" *ngIf="serverError">
-          <span>⚠ {{ serverError }}</span>
+        <div class="error-box" *ngIf="error">
+          <span>⚠ {{ error }}</span>
         </div>
 
         <button type="submit" class="soft-btn" [disabled]="loading">
@@ -76,8 +71,6 @@
         <span class="st st3">Angular</span>
       </div>
     </div>
-      <button class="btn-guest" (click)="goToDashboard()">
-          Посмотреть Dashboard →
-      </button>
+
   </div>
 </div>
