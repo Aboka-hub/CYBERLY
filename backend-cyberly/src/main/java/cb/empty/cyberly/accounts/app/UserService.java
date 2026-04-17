@@ -14,6 +14,7 @@ import cb.empty.cyberly.common.security.JwtService;
 import cb.empty.cyberly.risk.app.RiskService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class UserService {
     private final JwtService jwtService;
     private final GeoIpService geoIpService;
 
+    @Value("${app.max-failed-attempts:5}")
+    private int maxFailedAttempts;
+
     public UserResponse getMe(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -39,66 +43,62 @@ public class UserService {
     }
 
     public void register(RegisterRequest request) {
-
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Email already exists"
-            );
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         }
-
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(Status.ACTIVE);
-
         userRepository.save(user);
     }
 
     public UserResponse login(LoginRequest request, HttpServletRequest httpRequest) {
 
         String ipAddress = httpRequest.getRemoteAddr();
-        String device = httpRequest.getHeader("User-Agent");
-        String country = geoIpService.getCountry(ipAddress);
+        String device    = httpRequest.getHeader("User-Agent");
+        String country   = geoIpService.getCountry(ipAddress);
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Invalid credentials"
+                        HttpStatus.UNAUTHORIZED, "Invalid credentials"
                 ));
 
-        boolean passwordMatches = passwordEncoder.matches(
-                request.getPassword(),
-                user.getPassword()
-        );
-
-        if (!passwordMatches) {
-            loginEventService.recordEvent(user, LoginEventType.LOGIN_FAILED, ipAddress, country, device);
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
-        }
-
+        // Check block BEFORE password — locked users get 423 immediately
         if (user.getStatus() == Status.BLOCKED) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is blocked");
+            throw new ResponseStatusException(HttpStatus.LOCKED,
+                    "Account is locked. Contact support.");
         }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            int attempts = user.getFailedAttempts() + 1;
+            user.setFailedAttempts(attempts);
+
+            if (attempts >= maxFailedAttempts) {
+                user.setStatus(Status.BLOCKED);
+                userRepository.save(user);
+                loginEventService.recordEvent(user, LoginEventType.LOGIN_FAILED, ipAddress, country, device);
+                throw new ResponseStatusException(HttpStatus.LOCKED,
+                        "Account locked after " + maxFailedAttempts + " failed attempts.");
+            }
+
+            userRepository.save(user);
+            loginEventService.recordEvent(user, LoginEventType.LOGIN_FAILED, ipAddress, country, device);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "Invalid credentials. Attempts: " + attempts + "/" + maxFailedAttempts);
+        }
+
+        // Successful login — reset counter
+        user.setFailedAttempts(0);
+        userRepository.save(user);
 
         LoginEvent event = loginEventService.recordEvent(
-                user,
-                LoginEventType.LOGIN_SUCCESS,
-                ipAddress,
-                country,
-                device
-        );
+                user, LoginEventType.LOGIN_SUCCESS, ipAddress, country, device);
 
         riskService.calculateRisk(user, event);
 
         String token = jwtService.generateToken(user.getId(), user.getEmail());
 
-        return new UserResponse(
-                token,
-                user.getId(),
-                user.getEmail(),
-                user.getStatus(),
-                "Login successful"
-        );
+        return new UserResponse(token, user.getId(), user.getEmail(), user.getStatus(), "Login successful");
     }
 }
