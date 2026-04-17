@@ -35,7 +35,7 @@
         <h2 class="soft-title">Регистрация</h2>
         <p class="soft-sub">Шаг 1 из 2 — ваш email</p>
 
-        <div class="sf" [class.sf--error]="emailError">
+        <div class="sf">
           <label for="email">Email</label>
           <input
             id="email"
@@ -43,9 +43,12 @@
             placeholder="you@example.com"
             [(ngModel)]="email"
             name="email"
-            (input)="emailError = ''"
+            (keydown.enter)="nextStep()"
           />
-          <span class="sf__error" *ngIf="emailError">{{ emailError }}</span>
+        </div>
+
+        <div class="error-box" *ngIf="error">
+          <span>⚠ {{ error }}</span>
         </div>
 
         <button class="soft-btn" (click)="nextStep()">Далее →</button>
@@ -56,7 +59,7 @@
         <h2 class="soft-title">Придумайте пароль</h2>
         <p class="soft-sub">Шаг 2 из 2 — защита аккаунта</p>
 
-        <div class="sf" [class.sf--error]="passwordError">
+        <div class="sf">
           <label for="password">Пароль</label>
           <div class="sf__input-wrap">
             <input
@@ -65,19 +68,19 @@
               placeholder="Минимум 8 символов"
               [(ngModel)]="password"
               name="password"
-              (input)="passwordError = ''; checkStrength()"
+              (input)="checkStrength()"
             />
             <button type="button" class="sf__eye" (click)="showPassword = !showPassword">
               {{ showPassword ? '🙈' : '👁' }}
             </button>
           </div>
-          <input type="password" [(ngModel)]="password" (input)="checkStrength()">
-          <div [style.width.%]="strengthWidth" [style.background]="strengthColor"></div>
-          <span>{{ strengthLabel }}</span>
-          <span class="sf__error" *ngIf="passwordError">{{ passwordError }}</span>
+          <div class="strength-bar" *ngIf="password.length > 0">
+            <div class="strength-fill" [style.width.%]="strengthWidth" [style.background]="strengthColor"></div>
+          </div>
+          <span class="strength-label" *ngIf="strengthLabel">{{ strengthLabel }}</span>
         </div>
 
-        <div class="sf" [class.sf--error]="confirmError">
+        <div class="sf">
           <label for="confirm">Подтверждение пароля</label>
           <input
             id="confirm"
@@ -85,18 +88,17 @@
             placeholder="Повторите пароль"
             [(ngModel)]="confirmPassword"
             name="confirm"
-            (input)="confirmError = ''"
           />
-          <span class="sf__error" *ngIf="confirmError">{{ confirmError }}</span>
+          <span class="sf__error" *ngIf="passwordMismatch">Пароли не совпадают</span>
         </div>
 
-        <div class="error-box" *ngIf="serverError">
-          <span>⚠ {{ serverError }}</span>
+        <div class="error-box" *ngIf="error">
+          <span>⚠ {{ error }}</span>
         </div>
 
         <div class="btn-row">
-          <button class="soft-btn soft-btn--outline" (click)="step = 1">← Назад</button>
-          <button class="soft-btn" (click)="onRegister()" [disabled]="loading">
+          <button class="soft-btn soft-btn--outline" (click)="step = 1; error = ''">← Назад</button>
+          <button class="soft-btn" (click)="onRegister()" [disabled]="loading || !isPasswordValid">
             <span *ngIf="!loading">Создать аккаунт</span>
             <span *ngIf="loading" class="spinner"></span>
           </button>

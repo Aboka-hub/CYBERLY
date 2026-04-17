@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import {AuthService} from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -18,11 +18,7 @@ export class RegisterComponent {
   loading         = false;
   error           = '';
   step            = 1;
-  emailError = ''
-  passwordError = ''
-  confirmError = ''
-  showPassword = false;
-  serverError: any;
+  showPassword    = false;
   strengthWidth   = 0;
 
   constructor(private auth: AuthService, private router: Router) {}
@@ -30,11 +26,11 @@ export class RegisterComponent {
   checkStrength() {
     const p = this.password;
     let score = 0;
-    if (p.length >= 8)              score += 25;
-    if (p.length >= 12)             score += 15;
-    if (/[A-Z]/.test(p))            score += 20;
-    if (/[0-9]/.test(p))            score += 20;
-    if (/[^A-Za-z0-9]/.test(p))     score += 20;
+    if (p.length >= 8)          score += 25;
+    if (p.length >= 12)         score += 15;
+    if (/[A-Z]/.test(p))       score += 20;
+    if (/[0-9]/.test(p))       score += 20;
+    if (/[^A-Za-z0-9]/.test(p)) score += 20;
     this.strengthWidth = Math.min(score, 100);
   }
 
@@ -55,17 +51,24 @@ export class RegisterComponent {
     return this.confirmPassword.length > 0 && this.password !== this.confirmPassword;
   }
 
-  get isStep1Valid(): boolean {
-    return this.email.length > 0
-      && this.password.length >= 8
-      && this.password === this.confirmPassword;
+  // Step 1: only email
+  get isEmailValid(): boolean {
+    return this.email.length > 0 && this.email.includes('@');
   }
+
+  // Step 2: password fields
+  get isPasswordValid(): boolean {
+    return this.password.length >= 8 && this.password === this.confirmPassword;
+  }
+
   nextStep() {
-    if (this.isStep1Valid) this.step = 2;
+    this.error = '';
+    if (this.isEmailValid) this.step = 2;
+    else this.error = 'Введите корректный email';
   }
 
   onRegister() {
-    if (!this.isStep1Valid) return;
+    if (!this.isPasswordValid) return;
     this.loading = true;
     this.error   = '';
 
