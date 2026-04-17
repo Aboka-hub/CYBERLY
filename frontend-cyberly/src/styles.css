@@ -4,6 +4,16 @@ html, body { height: 100%; overflow: hidden; }
 body { font-family: 'DM Sans', 'Inter', sans-serif; }
 app-root { display: block; height: 100%; }
 
+/* Routed page host elements must fill the flex shell */
+app-dashboard, app-events, app-risk, app-profile, app-subscriptions {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+router-outlet { display: none; }
+
 /* ===== THEME VARIABLES (cascade via .shell) ===== */
 .shell {
   --grad: linear-gradient(135deg, #c084fc, #60a5fa);
