@@ -31,5 +31,8 @@ public class User {
     private Status status = Status.ACTIVE;
 
     @Column(nullable = false)
+    private int failedAttempts = 0;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }
