@@ -1,11 +1,12 @@
 server:
   servlet:
     context-path: /api
+
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5567/cyberly_db
-    username: cyberly
-    password: cyberly
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5567/cyberly_db}
+    username: ${SPRING_DATASOURCE_USERNAME:cyberly}
+    password: ${SPRING_DATASOURCE_PASSWORD:cyberly}
   jpa:
     hibernate:
       ddl-auto: update
